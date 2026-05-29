@@ -1,0 +1,4 @@
+---
+# EFI directory name under /boot/efi/EFI/
+# AlmaLinux uses "almalinux", Rocky Linux uses "rocky"
+efi_dir: almalinux

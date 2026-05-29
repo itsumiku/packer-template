@@ -1,0 +1,33 @@
+- name: Install cloud-init (dnf)
+  dnf:
+    name:
+      - cloud-init
+      - cloud-utils-growpart
+      - dracut-config-generic
+  when: ansible_facts.pkg_mgr == 'dnf'
+
+- name: Install cloud-init (apt)
+  apt:
+    name:
+      - cloud-init
+      - cloud-guest-utils
+    state: present
+  when: ansible_facts.pkg_mgr == 'apt'
+
+- name: Enable cloud-init services
+  service:
+    name: "{{ item }}"
+    enabled: true
+  with_items:
+    - cloud-config
+    - cloud-init
+    - cloud-init-local
+    - cloud-final
+  failed_when: false
+
+- name: Configure cloud-init user name
+  replace:
+    dest: /etc/cloud/cloud.cfg
+    regexp: '^(\s+name:).*$'
+    replace: "\\1 {{ cloud_init_user }}"
+  when: cloud_init_user | length > 0

@@ -1,0 +1,53 @@
+#cloud-config
+autoinstall:
+  version: 1
+  locale: en_US.UTF-8
+  keyboard:
+    layout: us
+  identity:
+    hostname: ubuntu
+    username: ubuntu
+    password: "$6$rounds=4096$packer$boWUDPn2ItbIVp75vZkcB9enktYcH/yND03ZqeO.xN1ydPY2A8ZRsbTDbbiRlToGQ97O4.AM3Tdw9FQoPk41k."
+  ssh:
+    install-server: true
+    allow-pw: true
+  storage:
+    config:
+      - type: disk
+        id: disk-sda
+        ptable: gpt
+        match:
+          size: largest
+      - type: partition
+        id: esp
+        device: disk-sda
+        size: 538M
+        flag: esp
+        grub_device: true
+      - type: partition
+        id: root-part
+        device: disk-sda
+        size: -1
+      - type: format
+        id: fs-esp
+        volume: esp
+        fstype: fat32
+      - type: format
+        id: fs-root
+        volume: root-part
+        fstype: ext4
+      - type: mount
+        id: mount-esp
+        device: fs-esp
+        path: /boot/efi
+      - type: mount
+        id: mount-root
+        device: fs-root
+        path: /
+  packages:
+    - python3
+    - curl
+  late-commands:
+    - curtin in-target -- sed -i 's/^#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+    - curtin in-target -- sed -i 's/^PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+    - curtin in-target -- sh -c 'echo "root:packer" | chpasswd'

@@ -1,0 +1,11 @@
+---
+dependencies:
+  # - role: almalinux.ci.disable_firstboot
+  - role: "setup_cloud_init"
+    cloud_init_user: >-
+      {{ (ansible_facts['distribution'] == 'Rocky')     | ternary('rocky',
+         (ansible_facts['distribution'] == 'CentOS')    | ternary('centos',
+         (ansible_facts['distribution'] == 'Fedora')    | ternary('fedora',
+         (ansible_facts['distribution'] == 'Debian')    | ternary('debian',
+         (ansible_facts['distribution'] == 'Ubuntu')    | ternary('ubuntu',
+         'almalinux'))))) }}
