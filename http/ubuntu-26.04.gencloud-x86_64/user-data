@@ -48,6 +48,6 @@ autoinstall:
     - python3
     - curl
   late-commands:
-    - curtin in-target -- sed -i 's/^#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
-    - curtin in-target -- sed -i 's/^PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
     - curtin in-target -- sh -c 'echo "root:packer" | chpasswd'
+    - curtin in-target -- sh -c 'printf "PermitRootLogin yes\nPasswordAuthentication yes\n" > /etc/ssh/sshd_config.d/01-packer.conf'
+    - curtin in-target -- systemctl enable ssh.service

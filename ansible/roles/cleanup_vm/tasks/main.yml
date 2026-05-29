@@ -249,6 +249,11 @@
     path: /etc/ssh/sshd_config.d/01-permitrootlogin.conf
     state: absent
 
+- name: Remove Packer SSH override
+  file:
+    path: /etc/ssh/sshd_config.d/01-packer.conf
+    state: absent
+
 - name: Fill free space with zeroes
   shell: dd if=/dev/zero of=/zeroed_file bs=1M oflag=direct || rm -f /zeroed_file
 
