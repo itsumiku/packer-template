@@ -163,7 +163,9 @@
   when: ansible_facts.pkg_mgr == 'apt'
 
 - name: Remove unused locales
-  shell: rm -rf /usr/share/locale/!(en*|locale.alias)
+  shell:
+    cmd: rm -rf /usr/share/locale/!(en*|locale.alias)
+    executable: /bin/bash
   when: ansible_facts.pkg_mgr == 'apt'
 
 - name: Remove RHEL log folders
