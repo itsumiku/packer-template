@@ -238,6 +238,14 @@
     path: /etc/ssh/sshd_config.d/01-packer.conf
     state: absent
 
+- name: Remove Ubuntu installer user
+  ansible.builtin.user:
+    name: ubuntu
+    state: absent
+    remove: true
+    force: true
+  when: ansible_facts.distribution == 'Ubuntu'
+
 - name: Fill free space with zeroes
   shell: dd if=/dev/zero of=/zeroed_file bs=1M oflag=direct || rm -f /zeroed_file
 
