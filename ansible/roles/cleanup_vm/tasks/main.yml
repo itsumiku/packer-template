@@ -13,11 +13,38 @@
   ignore_errors: yes
   when: ansible_facts.pkg_mgr == 'apt'
 
+- name: Autopurge removed APT packages
+  ansible.builtin.command: apt-get autopurge -y
+  register: autopurgeoutput_apt
+  changed_when: autopurgeoutput_apt.rc == 0
+  ignore_errors: yes
+  when: ansible_facts.pkg_mgr == 'apt'
+
 - name: Remove old kernel images (apt)
   shell: |
     dpkg -l 'linux-image-*' | awk '/^ii/{print $2}' | grep -v $(uname -r) | xargs -r apt-get -y purge
   when: ansible_facts.pkg_mgr == 'apt'
   ignore_errors: yes
+
+- name: Remove snapd from Ubuntu images
+  ansible.builtin.apt:
+    name: snapd
+    state: absent
+    purge: true
+    autoremove: true
+  when: ansible_facts.distribution == 'Ubuntu'
+
+- name: Remove Ubuntu snap leftovers
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /snap
+    - /var/snap
+    - /var/lib/snapd
+    - /var/cache/snapd
+    - /root/snap
+  when: ansible_facts.distribution == 'Ubuntu'
 
 - name: Include sbom_data role for SBOM data collection
   include_role:

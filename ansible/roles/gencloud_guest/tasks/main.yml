@@ -42,11 +42,6 @@
   ansible.builtin.apt:
     name:
       - qemu-guest-agent
-      - nfs-common
-      - rsync
-      - jq
-      - tcpdump
-      - tuned
     state: present
   when: ansible_facts.pkg_mgr == 'apt'
 
@@ -55,18 +50,21 @@
     name: tuned.service
     enabled: true
     state: started
+  when: ansible_facts.pkg_mgr == 'dnf'
 
 - name: Get current TuneD profile
   ansible.builtin.command:
     cmd: tuned-adm active
   register: tuned_adm_active
   changed_when: false
+  when: ansible_facts.pkg_mgr == 'dnf'
 
 - name: Test if TuneD profile is active
   ansible.builtin.assert:
     that: "tuned_adm_active.stdout is search('virtual-guest')"
     fail_msg: Configured active profile is not same as current one
     success_msg: The configured TuneD profile is current
+  when: ansible_facts.pkg_mgr == 'dnf'
 
 
 - name: Regenerate all initramfs images (dracut)
