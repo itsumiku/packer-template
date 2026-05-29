@@ -179,6 +179,22 @@
     label: "{{ item.path }}"
   when: ansible_facts.pkg_mgr == 'apt'
 
+- name: Find build-time netplan configuration files
+  ansible.builtin.find:
+    paths: /etc/netplan
+    patterns: "*.yaml"
+  register: netplan_files
+  when: ansible_facts.distribution == 'Ubuntu'
+
+- name: Remove build-time netplan configuration files
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ netplan_files.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+  when: ansible_facts.distribution == 'Ubuntu'
+
 - name: Remove RHEL log folders
   file:
     path: "{{ item }}"

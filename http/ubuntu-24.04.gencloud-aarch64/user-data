@@ -11,6 +11,11 @@ autoinstall:
   ssh:
     install-server: true
     allow-pw: true
+  network:
+    version: 2
+    ethernets:
+      eth0:
+        dhcp4: true
   storage:
     config:
       - type: disk
