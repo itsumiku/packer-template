@@ -162,10 +162,21 @@
   shell: rm -rf /usr/share/doc/* /usr/share/man/* /usr/share/info/*
   when: ansible_facts.pkg_mgr == 'apt'
 
-- name: Remove unused locales
-  shell:
-    cmd: shopt -s extglob && rm -rf /usr/share/locale/!(en*|locale.alias)
-    executable: /bin/bash
+- name: Find unused locale directories
+  ansible.builtin.find:
+    paths: /usr/share/locale
+    file_type: directory
+    excludes: "en*,locale.alias"
+  register: unused_locales
+  when: ansible_facts.pkg_mgr == 'apt'
+
+- name: Remove unused locale directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ unused_locales.files }}"
+  loop_control:
+    label: "{{ item.path }}"
   when: ansible_facts.pkg_mgr == 'apt'
 
 - name: Remove RHEL log folders
