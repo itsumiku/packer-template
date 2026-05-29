@@ -13,6 +13,11 @@
   ignore_errors: yes
   when: ansible_facts.pkg_mgr == 'apt'
 
+- name: Remove Ubuntu generic kernel and firmware packages
+  ansible.builtin.shell: |
+    apt-get purge -y 'linux-generic*' 'linux-headers-generic*' 'linux-image-generic*' 'linux-modules-extra-*' linux-firmware || true
+  when: ansible_facts.distribution == 'Ubuntu'
+
 - name: Autopurge removed APT packages
   ansible.builtin.command: apt-get autopurge -y
   register: autopurgeoutput_apt

@@ -6,6 +6,8 @@ autoinstall:
     layout: us
   source:
     id: ubuntu-server-minimal
+  kernel:
+    package: linux-virtual
   identity:
     hostname: ubuntu
     username: ubuntu

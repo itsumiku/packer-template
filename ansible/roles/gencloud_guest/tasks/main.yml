@@ -43,6 +43,7 @@
     name:
       - qemu-guest-agent
     state: present
+    install_recommends: false
   when: ansible_facts.pkg_mgr == 'apt'
 
 - name: Enable TuneD service
