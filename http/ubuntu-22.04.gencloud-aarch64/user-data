@@ -11,6 +11,7 @@ autoinstall:
   ssh:
     install-server: true
     allow-pw: true
+  updates: all
   network:
     version: 2
     ethernets:
