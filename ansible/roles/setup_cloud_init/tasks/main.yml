@@ -31,3 +31,19 @@
     regexp: '^(\s+name:).*$'
     replace: "\\1 {{ cloud_init_user }}"
   when: cloud_init_user | length > 0
+
+- name: Remove installer cloud-init datasource override
+  ansible.builtin.file:
+    path: /etc/cloud/cloud.cfg.d/99-installer.cfg
+    state: absent
+  when: ansible_facts.distribution == 'Ubuntu'
+
+- name: Configure cloud-init datasource list
+  ansible.builtin.copy:
+    dest: /etc/cloud/cloud.cfg.d/99-gencloud-datasource.cfg
+    content: |
+      datasource_list: [ NoCloud, ConfigDrive, OpenStack, None ]
+    owner: root
+    group: root
+    mode: "0644"
+  when: ansible_facts.pkg_mgr == 'apt'
