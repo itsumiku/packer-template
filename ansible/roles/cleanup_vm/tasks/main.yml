@@ -164,7 +164,7 @@
 
 - name: Remove unused locales
   shell:
-    cmd: rm -rf /usr/share/locale/!(en*|locale.alias)
+    cmd: shopt -s extglob && rm -rf /usr/share/locale/!(en*|locale.alias)
     executable: /bin/bash
   when: ansible_facts.pkg_mgr == 'apt'
 
