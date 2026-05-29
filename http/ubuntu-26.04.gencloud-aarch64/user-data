@@ -12,14 +12,13 @@ autoinstall:
     install-server: true
     allow-pw: true
   network:
-    network:
-      version: 2
-      ethernets:
-        all-en:
-          match:
-            name: "e*"
-          dhcp4: true
-          dhcp6: false
+    version: 2
+    ethernets:
+      all-en:
+        match:
+          name: "e*"
+        dhcp4: true
+        dhcp6: false
   storage:
     config:
       - type: disk
@@ -57,6 +56,7 @@ autoinstall:
     - python3
     - curl
   late-commands:
+    - curtin in-target -- sh -c 'echo bmV0d29yazoKICB2ZXJzaW9uOiAyCiAgZXRoZXJuZXRzOgogICAgYWxsLWVuOgogICAgICBtYXRjaDoKICAgICAgICBuYW1lOiAiZSoiCiAgICAgIGRoY3A0OiB0cnVlCiAgICAgIGRoY3A2OiBmYWxzZQo= | base64 -d > /etc/netplan/00-installer-config.yaml'
     - curtin in-target -- sh -c 'echo "root:packer" | chpasswd'
     - curtin in-target -- passwd -u root
     - curtin in-target -- sh -c 'printf "PermitRootLogin yes\nPasswordAuthentication yes\n" > /etc/ssh/sshd_config.d/01-packer.conf'
