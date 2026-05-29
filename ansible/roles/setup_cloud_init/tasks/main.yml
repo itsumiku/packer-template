@@ -32,10 +32,14 @@
     replace: "\\1 {{ cloud_init_user }}"
   when: cloud_init_user | length > 0
 
-- name: Remove installer cloud-init datasource override
+- name: Remove installer cloud-init overrides
   ansible.builtin.file:
-    path: /etc/cloud/cloud.cfg.d/99-installer.cfg
+    path: "{{ item }}"
     state: absent
+  loop:
+    - /etc/cloud/cloud.cfg.d/99-installer.cfg
+    - /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
+    - /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
   when: ansible_facts.distribution == 'Ubuntu'
 
 - name: Configure cloud-init datasource list
