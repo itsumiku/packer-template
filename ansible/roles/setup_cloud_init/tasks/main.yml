@@ -32,22 +32,19 @@
     replace: "\\1 {{ cloud_init_user }}"
   when: cloud_init_user | length > 0
 
-- name: Remove installer cloud-init overrides
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
-  loop:
-    - /etc/cloud/cloud.cfg.d/99-installer.cfg
-    - /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
-    - /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+- name: Find Ubuntu cloud-init config snippets
+  ansible.builtin.find:
+    paths: /etc/cloud/cloud.cfg.d
+    file_type: any
+    hidden: true
+  register: ubuntu_cloud_cfg_snippets
   when: ansible_facts.distribution == 'Ubuntu'
 
-- name: Configure cloud-init datasource list
-  ansible.builtin.copy:
-    dest: /etc/cloud/cloud.cfg.d/99-gencloud-datasource.cfg
-    content: |
-      datasource_list: [ NoCloud, ConfigDrive, OpenStack, None ]
-    owner: root
-    group: root
-    mode: "0644"
-  when: ansible_facts.pkg_mgr == 'apt'
+- name: Remove Ubuntu cloud-init config snippets
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ ubuntu_cloud_cfg_snippets.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+  when: ansible_facts.distribution == 'Ubuntu'
