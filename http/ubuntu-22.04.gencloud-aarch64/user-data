@@ -60,7 +60,6 @@ autoinstall:
         path: /
   packages:
     - python3
-    - linux-image-extra-virtual
   late-commands:
     - curtin in-target -- sh -c 'echo bmV0d29yazoKICB2ZXJzaW9uOiAyCiAgZXRoZXJuZXRzOgogICAgYWxsLWVuOgogICAgICBtYXRjaDoKICAgICAgICBuYW1lOiAiZSoiCiAgICAgIGRoY3A0OiB0cnVlCiAgICAgIGRoY3A2OiBmYWxzZQogICAgICBvcHRpb25hbDogdHJ1ZQo= | base64 -d > /etc/netplan/00-installer-config.yaml'
     - curtin in-target -- sh -c 'echo "root:packer" | chpasswd'
