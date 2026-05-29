@@ -15,7 +15,7 @@
 
 - name: Remove Ubuntu generic kernel and firmware packages
   ansible.builtin.shell: |
-    apt-get purge -y 'linux-generic*' 'linux-headers-generic*' 'linux-image-generic*' 'linux-modules-extra-*' linux-firmware || true
+    apt-get purge -y 'linux-generic*' 'linux-headers-generic*' 'linux-image-generic*' linux-firmware || true
   when: ansible_facts.distribution == 'Ubuntu'
 
 - name: Autopurge removed APT packages
