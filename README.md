@@ -2,7 +2,8 @@
 
 
 This project contains [Packer](https://www.packer.io) templates and tools for
-building Generic Cloud (OpenStack compatible) images for AlmaLinux OS and Rocky Linux.
+building Generic Cloud (OpenStack compatible) images for AlmaLinux, Rocky Linux,
+CentOS Stream, Fedora, Debian, and Ubuntu.
 
 Upstream: https://github.com/AlmaLinux/cloud-images [a79d9d0adc20f0b84853594ae322f65a7415efe2]
 
@@ -12,6 +13,10 @@ Upstream: https://github.com/AlmaLinux/cloud-images [a79d9d0adc20f0b84853594ae32
 | :---: | :---: | :---: |
 | AlmaLinux OS | `x86_64` `AArch64` | https://wiki.almalinux.org/cloud/Generic-cloud.html |
 | Rocky Linux | `x86_64` `AArch64` | https://rockylinux.org/cloud-images |
+| CentOS Stream | `x86_64` `AArch64` | https://www.centos.org/centos-stream/ |
+| Fedora | `x86_64` `AArch64` | https://fedoraproject.org/cloud/download |
+| Debian | `x86_64` `AArch64` | https://www.debian.org/distrib/ |
+| Ubuntu | `x86_64` `AArch64` | https://ubuntu.com/download/server |
 
 
 ## CI/CD Workflows
@@ -33,7 +38,7 @@ packer init -upgrade .
 ```
 
 
-### Generic Cloud (OpenStack compatible) images
+### AlmaLinux OS
 
 
 #### AlmaLinux OS 8
@@ -56,8 +61,6 @@ packer build -only=qemu.almalinux-8-gencloud-aarch64 .
 
 `x86_64` Unified Boot (BIOS and UEFI):
 
-See: [How to build UEFI and Secure Boot supported Images](https://github.com/AlmaLinux/cloud-images#how-to-build-uefi-and-secure-boot-supported-images)
-
 ```sh
 packer build -only=qemu.almalinux-9-gencloud-x86_64 .
 ```
@@ -71,8 +74,6 @@ packer build -only=qemu.almalinux-9-gencloud-aarch64 .
 #### AlmaLinux OS 10
 
 `x86_64` Unified Boot (BIOS and UEFI):
-
-See: [How to build UEFI and Secure Boot supported Images](https://github.com/AlmaLinux/cloud-images#how-to-build-uefi-and-secure-boot-supported-images)
 
 ```sh
 packer build -only=qemu.almalinux-10-gencloud-x86-64 .
@@ -88,8 +89,6 @@ packer build -only=qemu.almalinux-10-gencloud-aarch64 .
 
 `x86_64` Unified Boot (BIOS and UEFI):
 
-See: [How to build UEFI and Secure Boot supported Images](https://github.com/AlmaLinux/cloud-images#how-to-build-uefi-and-secure-boot-supported-images)
-
 ```sh
 packer build -only=qemu.almalinux-kitten-10-gencloud-x86-64 .
 ```
@@ -101,7 +100,7 @@ packer build -only=qemu.almalinux-kitten-10-gencloud-aarch64 .
 ```
 
 
-### Rocky Linux Generic Cloud images
+### Rocky Linux
 
 
 #### Rocky Linux 8
@@ -147,6 +146,188 @@ packer build -only=qemu.rockylinux-10-gencloud-aarch64 .
 ```
 
 
+### CentOS Stream
+
+
+#### CentOS Stream 9
+
+`x86_64`:
+
+```sh
+packer build -only=qemu.centos_stream_9_gencloud_x86_64 .
+```
+
+`AArch64`:
+
+```sh
+packer build -only=qemu.centos_stream_9_gencloud_aarch64 .
+```
+
+#### CentOS Stream 10
+
+`x86_64`:
+
+```sh
+packer build -only=qemu.centos_stream_10_gencloud_x86_64 .
+```
+
+`AArch64`:
+
+```sh
+packer build -only=qemu.centos_stream_10_gencloud_aarch64 .
+```
+
+
+### Fedora
+
+
+#### Fedora 43
+
+`x86_64`:
+
+```sh
+packer build -only=qemu.fedora_43_gencloud_x86_64 .
+```
+
+`AArch64`:
+
+```sh
+packer build -only=qemu.fedora_43_gencloud_aarch64 .
+```
+
+#### Fedora 44
+
+`x86_64`:
+
+```sh
+packer build -only=qemu.fedora_44_gencloud_x86_64 .
+```
+
+`AArch64`:
+
+```sh
+packer build -only=qemu.fedora_44_gencloud_aarch64 .
+```
+
+
+### Debian
+
+
+#### Debian 11
+
+`x86_64`:
+
+```sh
+packer build -only=qemu.debian_11_gencloud_x86_64 .
+```
+
+`AArch64`:
+
+```sh
+packer build -only=qemu.debian_11_gencloud_aarch64 .
+```
+
+#### Debian 12
+
+`x86_64`:
+
+```sh
+packer build -only=qemu.debian_12_gencloud_x86_64 .
+```
+
+`AArch64`:
+
+```sh
+packer build -only=qemu.debian_12_gencloud_aarch64 .
+```
+
+#### Debian 13
+
+`x86_64`:
+
+```sh
+packer build -only=qemu.debian_13_gencloud_x86_64 .
+```
+
+`AArch64`:
+
+```sh
+packer build -only=qemu.debian_13_gencloud_aarch64 .
+```
+
+
+### Ubuntu
+
+
+#### Ubuntu 22.04
+
+`x86_64`:
+
+```sh
+packer build -only=qemu.ubuntu_22_04_gencloud_x86_64 .
+```
+
+`AArch64`:
+
+```sh
+packer build -only=qemu.ubuntu_22_04_gencloud_aarch64 .
+```
+
+#### Ubuntu 24.04
+
+`x86_64`:
+
+```sh
+packer build -only=qemu.ubuntu_24_04_gencloud_x86_64 .
+```
+
+`AArch64`:
+
+```sh
+packer build -only=qemu.ubuntu_24_04_gencloud_aarch64 .
+```
+
+#### Ubuntu 26.04
+
+`x86_64`:
+
+```sh
+packer build -only=qemu.ubuntu_26_04_gencloud_x86_64 .
+```
+
+`AArch64`:
+
+```sh
+packer build -only=qemu.ubuntu_26_04_gencloud_aarch64 .
+```
+
+
+## Configuration
+
+### Key Packer Variables
+
+| Variable | Default | Description |
+| :--- | :---: | :--- |
+| `gencloud_disk_size` | `5G` | Virtual disk size for the build VM |
+| `gencloud_ssh_username` | `root` | SSH username for Ansible provisioning |
+
+Override variables via command line or `.auto.pkrvars.hcl` file:
+
+```sh
+packer build -var gencloud_disk_size=10G -only=qemu.almalinux-9-gencloud-x86_64 .
+```
+
+### Partition Layout
+
+| OS Family | Architecture | Partitions |
+| :--- | :---: | :--- |
+| RHEL family | `x86_64` | biosboot (1MB) + ESP (200MB) + /boot (512MB) + / |
+| RHEL family | `AArch64` | ESP (200MB) + /boot (512MB) + / |
+| Debian | `x86_64` | biosgrub (1MB) + ESP (538MB) + / |
+| Debian | `AArch64` | ESP (538MB) + / |
+| Ubuntu | both | ESP (538MB) + / |
+
+
 ## HOW TOs
 
 #### How to build UEFI and Secure Boot supported Images
@@ -155,7 +336,7 @@ You need a `1.0.7` or newer version of the [QEMU packer plugin](https://github.c
 
 The `ovmf_code` and `ovmf_vars` Packer variables are set to default OVMF Secure Boot paths for the EL and Fedora. Use the table below for the OVMF package name and the firmware paths for your distro.
 
-| Distro | Package |`ovmf_code` | `ovmf_code` |
+| Distro | Package |`ovmf_code` | `ovmf_vars` |
 | :---:  | :---: | :---: | :--: |
 | Arch Linux | `edk2-ovmf` |`/usr/share/OVMF/OVMF_CODE.secboot.fd` | `/usr/share/OVMF/OVMF_VARS.fd` |
 | Debian and derivatives | `ovmf` | `/usr/share/OVMF/OVMF_CODE.secboot.fd` | `/usr/share/OVMF/OVMF_VARS.ms.fd` |
@@ -273,17 +454,3 @@ Fedora and EL:
 ```sh
 update-crypto-policies --set DEFAULT:SHA1
 ```
-
-### How to build AlmaLinux OS cloud images on EL
-
-**EL8**:
-
-See:
-* ["qemu-system-x86_64": executable file not found in $PATH](https://github.com/AlmaLinux/cloud-images#qemu-system-x86_64-executable-file-not-found-in-path)
-
-**EL9**:
-
-See:
-* ["qemu-system-x86_64": executable file not found in $PATH](https://github.com/AlmaLinux/cloud-images#qemu-system-x86_64-executable-file-not-found-in-path)
-* [Packer's Ansible Plugin can't connect via SSH on SHA1 disabled system](https://github.com/AlmaLinux/cloud-images#packers-ansible-plugin-cant-connect-via-ssh-on-sha1-disabled-system)
-* [Failed to connect to the host via scp with OpenSSH >= 9.0/9.0p1 and EL9](https://github.com/AlmaLinux/cloud-images#failed-to-connect-to-the-host-via-scp-with-openssh--9090p1-and-el9)
