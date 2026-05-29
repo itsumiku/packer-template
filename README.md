@@ -76,7 +76,7 @@ packer build -only=qemu.almalinux-9-gencloud-aarch64 .
 `x86_64` Unified Boot (BIOS and UEFI):
 
 ```sh
-packer build -only=qemu.almalinux-10-gencloud-x86-64 .
+packer build -only=qemu.almalinux-10-gencloud-x86_64 .
 ```
 
 `AArch64`:
@@ -90,7 +90,7 @@ packer build -only=qemu.almalinux-10-gencloud-aarch64 .
 `x86_64` Unified Boot (BIOS and UEFI):
 
 ```sh
-packer build -only=qemu.almalinux-kitten-10-gencloud-x86-64 .
+packer build -only=qemu.almalinux-kitten-10-gencloud-x86_64 .
 ```
 
 `AArch64`:
@@ -136,7 +136,7 @@ packer build -only=qemu.rockylinux-9-gencloud-aarch64 .
 `x86_64` Unified Boot (BIOS and UEFI):
 
 ```sh
-packer build -only=qemu.rockylinux-10-gencloud-x86-64 .
+packer build -only=qemu.rockylinux-10-gencloud-x86_64 .
 ```
 
 `AArch64`:

@@ -65,7 +65,7 @@ else
     exit "$EX_NOINPUT"
 fi
 
-# permit root login via SSH with password authetication
+# permit root login via SSH with password authentication
 echo "PermitRootLogin yes" > /etc/ssh/sshd_config.d/01-permitrootlogin.conf
 
 # To fix the OpenSSH version 9.9p1-16.el10 issue:

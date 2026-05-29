@@ -49,7 +49,7 @@ tar
 
 %post --erroronfail
 
-# permit root login via SSH with password authetication
+# permit root login via SSH with password authentication
 echo "PermitRootLogin yes" > /etc/ssh/sshd_config.d/01-permitrootlogin.conf
 
 %end

@@ -3,7 +3,6 @@
 url --url https://dl.rockylinux.org/pub/rocky/10/BaseOS/x86_64/os
 
 text
-network --bootproto=dhcp
 lang en_US.UTF-8
 keyboard us
 timezone UTC --utc
@@ -67,7 +66,7 @@ else
     exit "$EX_NOINPUT"
 fi
 
-# permit root login via SSH with password authetication
+# permit root login via SSH with password authentication
 echo "PermitRootLogin yes" > /etc/ssh/sshd_config.d/01-permitrootlogin.conf
 
 %end

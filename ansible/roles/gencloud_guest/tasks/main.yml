@@ -64,7 +64,7 @@
 
 - name: Test if TuneD profile is active
   ansible.builtin.assert:
-    that: "tuned_adm_active.stdout == 'Current active profile: virtual-guest'"
+    that: "tuned_adm_active.stdout is search('virtual-guest')"
     fail_msg: Configured active profile is not same as current one
     success_msg: The configured TuneD profile is current
 

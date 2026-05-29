@@ -1,6 +1,6 @@
 # AlmaLinux OS 10 Packer template for Cloud-init included and OpenStack compatible Generic Cloud images
 
-source "qemu" "almalinux-10-gencloud-x86-64" {
+source "qemu" "almalinux-10-gencloud-x86_64" {
   iso_url            = local.iso_url_10_x86_64
   iso_checksum       = local.iso_checksum_10_x86_64
   http_directory     = var.http_directory
@@ -68,7 +68,7 @@ source "qemu" "almalinux-10-gencloud-aarch64" {
 
 build {
   sources = [
-    "source.qemu.almalinux-10-gencloud-x86-64",
+    "source.qemu.almalinux-10-gencloud-x86_64",
     "source.qemu.almalinux-10-gencloud-aarch64",
   ]
 

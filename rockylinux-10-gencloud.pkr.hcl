@@ -1,6 +1,6 @@
 # Rocky Linux 10 Packer template for Cloud-init included and OpenStack compatible Generic Cloud images
 
-source "qemu" "rockylinux-10-gencloud-x86-64" {
+source "qemu" "rockylinux-10-gencloud-x86_64" {
   iso_url            = local.iso_url_rocky_10_x86_64
   iso_checksum       = local.iso_checksum_rocky_10_x86_64
   http_directory     = var.http_directory
@@ -68,7 +68,7 @@ source "qemu" "rockylinux-10-gencloud-aarch64" {
 
 build {
   sources = [
-    "source.qemu.rockylinux-10-gencloud-x86-64",
+    "source.qemu.rockylinux-10-gencloud-x86_64",
     "source.qemu.rockylinux-10-gencloud-aarch64",
   ]
 

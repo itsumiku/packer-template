@@ -72,7 +72,7 @@
 
 - name: Get version of installed kernel # noqa: command-instead-of-module
   ansible.builtin.command:
-    cmd: rpm -qa --queryformat "%{VERSION}-%{RELEASE}.%{ARCH}" kernel
+    cmd: rpm -qa --queryformat "%{VERSION}-%{RELEASE}.%{ARCH}" kernel | tail -1
   register: kernel_ver
   changed_when: false
 
