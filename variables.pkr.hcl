@@ -905,7 +905,7 @@ local "gencloud_boot_command_debian_13_aarch64" {
 
 local "gencloud_boot_command_ubuntu_2204_x86_64" {
   expression = [
-    "<wait25s>",
+    "<wait5s>",
     "c<wait>",
     "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ubuntu-22.04.gencloud-x86_64/<enter><wait>",
     "initrd /casper/initrd<enter><wait>",
@@ -915,7 +915,7 @@ local "gencloud_boot_command_ubuntu_2204_x86_64" {
 
 local "gencloud_boot_command_ubuntu_2204_aarch64" {
   expression = [
-    "<wait25s>",
+    "<wait5s>",
     "c<wait>",
     "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ubuntu-22.04.gencloud-aarch64/<enter><wait>",
     "initrd /casper/initrd<enter><wait>",
@@ -925,7 +925,7 @@ local "gencloud_boot_command_ubuntu_2204_aarch64" {
 
 local "gencloud_boot_command_ubuntu_2404_x86_64" {
   expression = [
-    "<wait25s>",
+    "<wait5s>",
     "c<wait>",
     "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ubuntu-24.04.gencloud-x86_64/<enter><wait>",
     "initrd /casper/initrd<enter><wait>",
@@ -935,7 +935,7 @@ local "gencloud_boot_command_ubuntu_2404_x86_64" {
 
 local "gencloud_boot_command_ubuntu_2404_aarch64" {
   expression = [
-    "<wait25s>",
+    "<wait5s>",
     "c<wait>",
     "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ubuntu-24.04.gencloud-aarch64/<enter><wait>",
     "initrd /casper/initrd<enter><wait>",
@@ -945,7 +945,7 @@ local "gencloud_boot_command_ubuntu_2404_aarch64" {
 
 local "gencloud_boot_command_ubuntu_2604_x86_64" {
   expression = [
-    "<wait25s>",
+    "<wait5s>",
     "c<wait>",
     "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ubuntu-26.04.gencloud-x86_64/<enter><wait>",
     "initrd /casper/initrd<enter><wait>",
@@ -955,7 +955,7 @@ local "gencloud_boot_command_ubuntu_2604_x86_64" {
 
 local "gencloud_boot_command_ubuntu_2604_aarch64" {
   expression = [
-    "<wait25s>",
+    "<wait5s>",
     "c<wait>",
     "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ubuntu-26.04.gencloud-aarch64/<enter><wait>",
     "initrd /casper/initrd<enter><wait>",
