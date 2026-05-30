@@ -11,16 +11,11 @@
     name:
       - cloud-init
       - cloud-guest-utils
-    state: present
-  when: ansible_facts.pkg_mgr == 'apt'
-
-- name: Install resolvconf for Debian cloud-init DNS
-  apt:
-    name:
-      - resolvconf
+      - netplan.io
+      - systemd-resolved
     state: present
     install_recommends: false
-  when: ansible_facts.distribution == 'Debian'
+  when: ansible_facts.pkg_mgr == 'apt'
 
 - name: Enable cloud-init services
   service:
@@ -32,6 +27,16 @@
     - cloud-init-local
     - cloud-final
   failed_when: false
+
+- name: Enable APT network runtime services
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: true
+  loop:
+    - systemd-networkd
+    - systemd-resolved
+  failed_when: false
+  when: ansible_facts.pkg_mgr == 'apt'
 
 - name: Configure cloud-init user name
   replace:
@@ -64,10 +69,19 @@
     group: root
     mode: "0644"
     content: |
-      datasource_list: [ ConfigDrive, NoCloud, None ]
+      datasource_list: [ NoCloud, ConfigDrive, None ]
       disable_fallback_netcfg: true
+  when: ansible_facts.pkg_mgr == 'apt'
+
+- name: Configure Debian cloud-init netplan renderer
+  ansible.builtin.copy:
+    dest: /etc/cloud/cloud.cfg.d/91-debian-netplan.cfg
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
       system_info:
         network:
-          renderers: ['netplan', 'eni', 'network-manager']
-          activators: ['netplan', 'eni', 'network-manager', 'networkd']
-  when: ansible_facts.pkg_mgr == 'apt'
+          renderers: ['netplan', 'eni']
+          activators: ['netplan', 'networkd', 'eni']
+  when: ansible_facts.distribution == 'Debian'

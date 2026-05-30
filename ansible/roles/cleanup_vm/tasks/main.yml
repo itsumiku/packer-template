@@ -227,21 +227,13 @@
     state: absent
   when: ansible_facts.pkg_mgr == 'apt'
 
-- name: Link Ubuntu resolver to systemd-resolved
+- name: Link APT resolver to systemd-resolved
   ansible.builtin.file:
     src: ../run/systemd/resolve/stub-resolv.conf
     dest: /etc/resolv.conf
     state: link
     force: true
-  when: ansible_facts.distribution == 'Ubuntu'
-
-- name: Link Debian resolver to resolvconf
-  ansible.builtin.file:
-    src: ../run/resolvconf/resolv.conf
-    dest: /etc/resolv.conf
-    state: link
-    force: true
-  when: ansible_facts.distribution == 'Debian'
+  when: ansible_facts.pkg_mgr == 'apt'
 
 - name: Vacuum systemd journal
   command: journalctl --vacuum-size=0
