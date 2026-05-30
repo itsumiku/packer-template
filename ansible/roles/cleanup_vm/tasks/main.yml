@@ -84,6 +84,43 @@
   loop_control:
     label: "{{ item.path }}"
 
+- name: Find Debian build-time interface snippets
+  ansible.builtin.find:
+    paths: /etc/network/interfaces.d
+    file_type: any
+  register: debian_interface_snippets
+  failed_when: false
+  when: ansible_facts.distribution == 'Debian'
+
+- name: Remove Debian build-time interface snippets
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ debian_interface_snippets.files | default([]) }}"
+  loop_control:
+    label: "{{ item.path }}"
+  when: ansible_facts.distribution == 'Debian'
+
+- name: Reset Debian build-time interfaces file
+  ansible.builtin.copy:
+    dest: /etc/network/interfaces
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      auto lo
+      iface lo inet loopback
+
+      source /etc/network/interfaces.d/*
+  when: ansible_facts.distribution == 'Debian'
+
+- name: Remove APT DHCP lease files
+  ansible.builtin.shell: |
+    find /var/lib/dhcp /var/lib/NetworkManager /run/systemd/netif/leases -type f -name '*lease*' -print -delete 2>/dev/null || true
+  register: apt_dhcp_lease_cleanup
+  changed_when: apt_dhcp_lease_cleanup.stdout != ''
+  when: ansible_facts.pkg_mgr == 'apt'
+
 - name: Delete DNF cache
   command: dnf clean all
   when: ansible_facts.pkg_mgr == 'dnf'
