@@ -46,6 +46,14 @@
     install_recommends: false
   when: ansible_facts.pkg_mgr == 'apt'
 
+- name: Install Ubuntu debug access packages
+  ansible.builtin.apt:
+    name:
+      - sudo
+    state: present
+    install_recommends: false
+  when: ansible_facts.distribution == 'Ubuntu'
+
 - name: Enable TuneD service
   ansible.builtin.systemd_service:
     name: tuned.service
@@ -171,6 +179,27 @@
     cmd: update-initramfs -u
   changed_when: true
   when: ansible_facts.pkg_mgr == 'apt'
+
+- name: Create temporary Ubuntu debug user
+  ansible.builtin.user:
+    name: debug
+    comment: Temporary debug user for cloud-init diagnostics
+    groups: sudo
+    append: true
+    shell: /bin/bash
+    password: "$6$rounds=4096$packer$boWUDPn2ItbIVp75vZkcB9enktYcH/yND03ZqeO.xN1ydPY2A8ZRsbTDbbiRlToGQ97O4.AM3Tdw9FQoPk41k."
+  when: ansible_facts.distribution == 'Ubuntu'
+
+- name: Allow temporary Ubuntu debug user passwordless sudo
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/90-gencloud-debug
+    owner: root
+    group: root
+    mode: "0440"
+    content: |
+      debug ALL=(ALL) NOPASSWD:ALL
+    validate: /usr/sbin/visudo -cf %s
+  when: ansible_facts.distribution == 'Ubuntu'
 
 - name: Disable root login
   ansible.builtin.user:
