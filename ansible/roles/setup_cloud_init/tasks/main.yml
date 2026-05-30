@@ -45,6 +45,13 @@
     replace: "\\1 {{ cloud_init_user }}"
   when: cloud_init_user | length > 0
 
+- name: Enable cloud-init network configuration in main config
+  ansible.builtin.replace:
+    path: /etc/cloud/cloud.cfg
+    regexp: '(?ms)^network:\n\s+config:\s+disabled\n?'
+    replace: ''
+  when: ansible_facts.distribution == 'Ubuntu'
+
 - name: Find Ubuntu cloud-init config snippets
   ansible.builtin.find:
     paths: /etc/cloud/cloud.cfg.d
@@ -69,9 +76,22 @@
     group: root
     mode: "0644"
     content: |
-      datasource_list: [ NoCloud, ConfigDrive, None ]
+      datasource_list: [ ConfigDrive, NoCloud, None ]
       disable_fallback_netcfg: true
   when: ansible_facts.pkg_mgr == 'apt'
+
+- name: Configure Ubuntu cloud-init netplan renderer
+  ansible.builtin.copy:
+    dest: /etc/cloud/cloud.cfg.d/91-ubuntu-netplan.cfg
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      system_info:
+        network:
+          renderers: ['netplan']
+          activators: ['netplan', 'networkd']
+  when: ansible_facts.distribution == 'Ubuntu'
 
 - name: Configure Debian cloud-init netplan renderer
   ansible.builtin.copy:
