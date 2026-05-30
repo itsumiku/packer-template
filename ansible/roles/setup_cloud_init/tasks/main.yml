@@ -76,7 +76,7 @@
     group: root
     mode: "0644"
     content: |
-      datasource_list: [ ConfigDrive, NoCloud, None ]
+      datasource_list: [ NoCloud, ConfigDrive, None ]
       disable_fallback_netcfg: true
   when: ansible_facts.pkg_mgr == 'apt'
 

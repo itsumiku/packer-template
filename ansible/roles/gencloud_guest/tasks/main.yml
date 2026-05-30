@@ -81,6 +81,25 @@
     line: 'GRUB_CMDLINE_LINUX_DEFAULT="nomodeset console=tty0 console=ttyS0,115200n8 net.ifnames=0 biosdevname=0"'
   when: ansible_facts.distribution == 'Ubuntu'
 
+- name: Ensure Ubuntu GRUB drop-in directory exists
+  ansible.builtin.file:
+    path: /etc/default/grub.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: ansible_facts.distribution == 'Ubuntu'
+
+- name: Configure Ubuntu cloud kernel arguments drop-in
+  ansible.builtin.copy:
+    dest: /etc/default/grub.d/99-gencloud.cfg
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      GRUB_CMDLINE_LINUX_DEFAULT="nomodeset console=tty0 console=ttyS0,115200n8 net.ifnames=0 biosdevname=0"
+  when: ansible_facts.distribution == 'Ubuntu'
+
 - name: Regenerate GRUB configuration (apt)
   ansible.builtin.command:
     cmd: update-grub
