@@ -212,7 +212,6 @@
   command: "truncate -s 0 {{ item }}"
   loop:
     - /etc/machine-id
-    - /etc/resolv.conf
     - /var/log/wtmp
     - /var/log/lastlog
     - /var/log/btmp
@@ -221,6 +220,28 @@
     - /var/log/kern.log
     - /var/log/daemon.log
   when: ansible_facts.pkg_mgr == 'apt'
+
+- name: Remove build-time APT resolver state
+  ansible.builtin.file:
+    path: /etc/resolv.conf
+    state: absent
+  when: ansible_facts.pkg_mgr == 'apt'
+
+- name: Link Ubuntu resolver to systemd-resolved
+  ansible.builtin.file:
+    src: ../run/systemd/resolve/stub-resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+    force: true
+  when: ansible_facts.distribution == 'Ubuntu'
+
+- name: Link Debian resolver to resolvconf
+  ansible.builtin.file:
+    src: ../run/resolvconf/resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+    force: true
+  when: ansible_facts.distribution == 'Debian'
 
 - name: Vacuum systemd journal
   command: journalctl --vacuum-size=0

@@ -14,6 +14,14 @@
     state: present
   when: ansible_facts.pkg_mgr == 'apt'
 
+- name: Install resolvconf for Debian cloud-init DNS
+  apt:
+    name:
+      - resolvconf
+    state: present
+    install_recommends: false
+  when: ansible_facts.distribution == 'Debian'
+
 - name: Enable cloud-init services
   service:
     name: "{{ item }}"
@@ -48,3 +56,18 @@
   loop_control:
     label: "{{ item.path }}"
   when: ansible_facts.distribution == 'Ubuntu'
+
+- name: Configure APT cloud-init datasource and networking
+  ansible.builtin.copy:
+    dest: /etc/cloud/cloud.cfg.d/90-pve-cloud-init.cfg
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      datasource_list: [ ConfigDrive, NoCloud, None ]
+      disable_fallback_netcfg: true
+      system_info:
+        network:
+          renderers: ['netplan', 'eni', 'network-manager']
+          activators: ['netplan', 'eni', 'network-manager', 'networkd']
+  when: ansible_facts.pkg_mgr == 'apt'
