@@ -818,25 +818,58 @@ locals {
   debian_13_iso_checksum_aarch64 = "file:https://cdimage.debian.org/cdimage/release/current/arm64/iso-cd/SHA512SUMS"
 }
 
-# Ubuntu installation ISO URLs and checksums
+# Ubuntu Cloud Image URLs and checksums
 # Codenames: jammy (22.04), noble (24.04), resolute (26.04)
-# amd64 ISOs on releases.ubuntu.com, arm64 ISOs on cdimage.ubuntu.com
 
 locals {
-  ubuntu_2204_iso_url_x86_64       = "https://releases.ubuntu.com/22.04/ubuntu-${var.os_ver_ubuntu_2204}-live-server-amd64.iso"
-  ubuntu_2204_iso_checksum_x86_64  = "file:https://releases.ubuntu.com/22.04/SHA256SUMS"
-  ubuntu_2204_iso_url_aarch64      = "https://cdimage.ubuntu.com/releases/22.04/release/ubuntu-${var.os_ver_ubuntu_2204}-live-server-arm64.iso"
-  ubuntu_2204_iso_checksum_aarch64 = "file:https://cdimage.ubuntu.com/releases/22.04/release/SHA256SUMS"
+  ubuntu_2204_cloudimg_url_x86_64       = "https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64-disk-kvm.img"
+  ubuntu_2204_cloudimg_checksum_x86_64  = "file:https://cloud-images.ubuntu.com/releases/22.04/release/SHA256SUMS"
+  ubuntu_2204_cloudimg_url_aarch64      = "https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-arm64.img"
+  ubuntu_2204_cloudimg_checksum_aarch64 = "file:https://cloud-images.ubuntu.com/releases/22.04/release/SHA256SUMS"
 
-  ubuntu_2404_iso_url_x86_64       = "https://releases.ubuntu.com/24.04/ubuntu-${var.os_ver_ubuntu_2404}-live-server-amd64.iso"
-  ubuntu_2404_iso_checksum_x86_64  = "file:https://releases.ubuntu.com/24.04/SHA256SUMS"
-  ubuntu_2404_iso_url_aarch64      = "https://cdimage.ubuntu.com/releases/24.04/release/ubuntu-${var.os_ver_ubuntu_2404}-live-server-arm64.iso"
-  ubuntu_2404_iso_checksum_aarch64 = "file:https://cdimage.ubuntu.com/releases/24.04/release/SHA256SUMS"
+  ubuntu_2404_cloudimg_url_x86_64       = "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img"
+  ubuntu_2404_cloudimg_checksum_x86_64  = "file:https://cloud-images.ubuntu.com/releases/24.04/release/SHA256SUMS"
+  ubuntu_2404_cloudimg_url_aarch64      = "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-arm64.img"
+  ubuntu_2404_cloudimg_checksum_aarch64 = "file:https://cloud-images.ubuntu.com/releases/24.04/release/SHA256SUMS"
 
-  ubuntu_2604_iso_url_x86_64       = "https://releases.ubuntu.com/26.04/ubuntu-${var.os_ver_ubuntu_2604}-live-server-amd64.iso"
-  ubuntu_2604_iso_checksum_x86_64  = "file:https://releases.ubuntu.com/26.04/SHA256SUMS"
-  ubuntu_2604_iso_url_aarch64      = "https://cdimage.ubuntu.com/releases/26.04/release/ubuntu-${var.os_ver_ubuntu_2604}-live-server-arm64.iso"
-  ubuntu_2604_iso_checksum_aarch64 = "file:https://cdimage.ubuntu.com/releases/26.04/release/SHA256SUMS"
+  ubuntu_2604_cloudimg_url_x86_64       = "https://cloud-images.ubuntu.com/releases/server/server/26.04/release/ubuntu-26.04-server-cloudimg-amd64.img"
+  ubuntu_2604_cloudimg_checksum_x86_64  = "file:https://cloud-images.ubuntu.com/releases/server/server/26.04/release/SHA256SUMS"
+  ubuntu_2604_cloudimg_url_aarch64      = "https://cloud-images.ubuntu.com/releases/server/server/26.04/release/ubuntu-26.04-server-cloudimg-arm64.img"
+  ubuntu_2604_cloudimg_checksum_aarch64 = "file:https://cloud-images.ubuntu.com/releases/server/server/26.04/release/SHA256SUMS"
+}
+
+locals {
+  ubuntu_cloudimg_seed = {
+    "meta-data"      = <<-EOF
+      instance-id: packer-ubuntu-cloudimg
+      local-hostname: ubuntu
+    EOF
+    "user-data"      = <<-EOF
+      #cloud-config
+      disable_root: false
+      ssh_pwauth: true
+      chpasswd:
+        expire: false
+        users:
+          - name: root
+            password: ${var.gencloud_ssh_password}
+            type: text
+      runcmd:
+        - [ systemctl, unmask, ssh.service ]
+        - [ systemctl, enable, ssh.service ]
+        - [ systemctl, restart, ssh.service ]
+    EOF
+    "network-config" = <<-EOF
+      version: 2
+      ethernets:
+        build:
+          match:
+            name: "e*"
+          dhcp4: true
+          dhcp6: false
+          optional: true
+    EOF
+  }
 }
 
 # Debian boot commands (GRUB shell: auto=true with preseed URL)
@@ -897,68 +930,6 @@ local "gencloud_boot_command_debian_13_aarch64" {
     "c<wait>",
     "linux /install.a64/vmlinuz auto=true priority=critical preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/debian-13.gencloud-aarch64.cfg debian-installer/locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=us<enter><wait>",
     "initrd /install.a64/initrd.gz<enter><wait>",
-    "boot<enter>",
-  ]
-}
-
-# Ubuntu boot commands (GRUB command line mode: autoinstall with ds=nocloud-net)
-
-local "gencloud_boot_command_ubuntu_2204_x86_64" {
-  expression = [
-    "<wait5s>",
-    "c<wait>",
-    "linux /casper/vmlinuz biosdevname=0 net.ifnames=0 autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ubuntu-22.04.gencloud-x86_64/<enter><wait>",
-    "initrd /casper/initrd<enter><wait>",
-    "boot<enter>",
-  ]
-}
-
-local "gencloud_boot_command_ubuntu_2204_aarch64" {
-  expression = [
-    "<wait5s>",
-    "c<wait>",
-    "linux /casper/vmlinuz biosdevname=0 net.ifnames=0 autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ubuntu-22.04.gencloud-aarch64/<enter><wait>",
-    "initrd /casper/initrd<enter><wait>",
-    "boot<enter>",
-  ]
-}
-
-local "gencloud_boot_command_ubuntu_2404_x86_64" {
-  expression = [
-    "<wait5s>",
-    "c<wait>",
-    "linux /casper/vmlinuz biosdevname=0 net.ifnames=0 autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ubuntu-24.04.gencloud-x86_64/<enter><wait>",
-    "initrd /casper/initrd<enter><wait>",
-    "boot<enter>",
-  ]
-}
-
-local "gencloud_boot_command_ubuntu_2404_aarch64" {
-  expression = [
-    "<wait5s>",
-    "c<wait>",
-    "linux /casper/vmlinuz biosdevname=0 net.ifnames=0 autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ubuntu-24.04.gencloud-aarch64/<enter><wait>",
-    "initrd /casper/initrd<enter><wait>",
-    "boot<enter>",
-  ]
-}
-
-local "gencloud_boot_command_ubuntu_2604_x86_64" {
-  expression = [
-    "<wait5s>",
-    "c<wait>",
-    "linux /casper/vmlinuz biosdevname=0 net.ifnames=0 autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ubuntu-26.04.gencloud-x86_64/<enter><wait>",
-    "initrd /casper/initrd<enter><wait>",
-    "boot<enter>",
-  ]
-}
-
-local "gencloud_boot_command_ubuntu_2604_aarch64" {
-  expression = [
-    "<wait5s>",
-    "c<wait>",
-    "linux /casper/vmlinuz biosdevname=0 net.ifnames=0 autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ubuntu-26.04.gencloud-aarch64/<enter><wait>",
-    "initrd /casper/initrd<enter><wait>",
     "boot<enter>",
   ]
 }

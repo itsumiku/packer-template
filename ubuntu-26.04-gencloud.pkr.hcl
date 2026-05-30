@@ -1,15 +1,15 @@
-# Ubuntu 26.04 LTS (Resolute) Packer template for Cloud-init included and OpenStack compatible Generic Cloud images
+# Ubuntu 26.04 LTS (Resolute) Packer template based on official Ubuntu Cloud Images
 
 source "qemu" "ubuntu_26_04_gencloud_x86_64" {
-  iso_url            = local.ubuntu_2604_iso_url_x86_64
-  iso_checksum       = local.ubuntu_2604_iso_checksum_x86_64
-  http_directory     = var.http_directory
+  iso_url            = local.ubuntu_2604_cloudimg_url_x86_64
+  iso_checksum       = local.ubuntu_2604_cloudimg_checksum_x86_64
+  disk_image         = true
+  cd_label           = "cidata"
+  cd_content         = local.ubuntu_cloudimg_seed
   shutdown_command   = var.root_shutdown_command
   ssh_username       = var.gencloud_ssh_username
   ssh_password       = var.gencloud_ssh_password
   ssh_timeout        = var.ssh_timeout
-  boot_command       = local.gencloud_boot_command_ubuntu_2604_x86_64
-  boot_wait          = var.boot_wait
   accelerator        = "kvm"
   disk_interface     = "virtio-scsi"
   disk_size          = var.gencloud_disk_size
@@ -33,15 +33,15 @@ source "qemu" "ubuntu_26_04_gencloud_x86_64" {
 }
 
 source "qemu" "ubuntu_26_04_gencloud_aarch64" {
-  iso_url            = local.ubuntu_2604_iso_url_aarch64
-  iso_checksum       = local.ubuntu_2604_iso_checksum_aarch64
-  http_directory     = var.http_directory
+  iso_url            = local.ubuntu_2604_cloudimg_url_aarch64
+  iso_checksum       = local.ubuntu_2604_cloudimg_checksum_aarch64
+  disk_image         = true
+  cd_label           = "cidata"
+  cd_content         = local.ubuntu_cloudimg_seed
   shutdown_command   = var.root_shutdown_command
   ssh_username       = var.gencloud_ssh_username
   ssh_password       = var.gencloud_ssh_password
   ssh_timeout        = var.ssh_timeout
-  boot_command       = local.gencloud_boot_command_ubuntu_2604_aarch64
-  boot_wait          = var.boot_wait
   accelerator        = "kvm"
   firmware           = var.aavmf_code
   use_pflash         = false

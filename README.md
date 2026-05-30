@@ -258,6 +258,11 @@ packer build -only=qemu.debian_13_gencloud_aarch64 .
 
 ### Ubuntu
 
+Ubuntu GenericCloud images are customized from official Ubuntu Cloud Images.
+Packer injects a temporary
+NoCloud seed for SSH access during provisioning, then the cleanup role removes
+build-time cloud-init state so the final image can be configured by the target
+platform.
 
 #### Ubuntu 22.04
 

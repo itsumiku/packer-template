@@ -25,6 +25,12 @@
       changed_when: true
 
 # Optimizations
+- name: Upgrade Ubuntu packages
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: dist
+  when: ansible_facts.distribution == 'Ubuntu'
+
 - name: Install additional packages (dnf)
   ansible.builtin.dnf:
     install_weak_deps: "{{ false if ansible_facts['distribution_major_version'] | int >= 9 else omit }}"
@@ -45,14 +51,6 @@
     state: present
     install_recommends: false
   when: ansible_facts.pkg_mgr == 'apt'
-
-- name: Install Ubuntu debug access packages
-  ansible.builtin.apt:
-    name:
-      - sudo
-    state: present
-    install_recommends: false
-  when: ansible_facts.distribution == 'Ubuntu'
 
 - name: Enable TuneD service
   ansible.builtin.systemd_service:
@@ -82,85 +80,6 @@
     line: 'GRUB_CMDLINE_LINUX_DEFAULT="nomodeset console=tty0 console=ttyS0,115200n8"'
   when: ansible_facts.distribution == 'Debian'
 
-- name: Configure cloud console and interface kernel arguments (Ubuntu)
-  ansible.builtin.lineinfile:
-    path: /etc/default/grub
-    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
-    line: 'GRUB_CMDLINE_LINUX_DEFAULT="nomodeset console=tty0 console=ttyS0,115200n8 net.ifnames=0 biosdevname=0"'
-  when: ansible_facts.distribution == 'Ubuntu'
-
-- name: Ensure Ubuntu GRUB drop-in directory exists
-  ansible.builtin.file:
-    path: /etc/default/grub.d
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-  when: ansible_facts.distribution == 'Ubuntu'
-
-- name: Configure Ubuntu cloud kernel arguments drop-in
-  ansible.builtin.copy:
-    dest: /etc/default/grub.d/99-gencloud.cfg
-    owner: root
-    group: root
-    mode: "0644"
-    content: |
-      GRUB_CMDLINE_LINUX_DEFAULT="nomodeset console=tty0 console=ttyS0,115200n8 net.ifnames=0 biosdevname=0"
-  when: ansible_facts.distribution == 'Ubuntu'
-
-- name: Ensure Ubuntu systemd network directory exists
-  ansible.builtin.file:
-    path: /etc/systemd/network
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-  when: ansible_facts.distribution == 'Ubuntu'
-
-- name: Keep Ubuntu virtio network interfaces on kernel names
-  ansible.builtin.copy:
-    dest: /etc/systemd/network/10-gencloud-virtio-net.link
-    owner: root
-    group: root
-    mode: "0644"
-    content: |
-      [Match]
-      Driver=virtio_net
-
-      [Link]
-      NamePolicy=kernel
-  when: ansible_facts.distribution == 'Ubuntu'
-
-- name: Mask Ubuntu networkd wait-online service
-  ansible.builtin.systemd_service:
-    name: systemd-networkd-wait-online.service
-    enabled: false
-    masked: true
-  failed_when: false
-  when: ansible_facts.distribution == 'Ubuntu'
-
-- name: Ensure Ubuntu SSH service drop-in directory exists
-  ansible.builtin.file:
-    path: /etc/systemd/system/ssh.service.d
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-  when: ansible_facts.distribution == 'Ubuntu'
-
-- name: Generate Ubuntu SSH host keys before ssh starts
-  ansible.builtin.copy:
-    dest: /etc/systemd/system/ssh.service.d/10-gencloud-host-keys.conf
-    owner: root
-    group: root
-    mode: "0644"
-    content: |
-      [Service]
-      ExecStartPre=
-      ExecStartPre=/usr/bin/ssh-keygen -A
-      ExecStartPre=/usr/sbin/sshd -t
-  when: ansible_facts.distribution == 'Ubuntu'
-
 - name: Regenerate GRUB configuration (apt)
   ansible.builtin.command:
     cmd: update-grub
@@ -179,35 +98,6 @@
     cmd: update-initramfs -u
   changed_when: true
   when: ansible_facts.pkg_mgr == 'apt'
-
-- name: Create temporary Ubuntu debug user
-  ansible.builtin.user:
-    name: debug
-    comment: Temporary debug user for cloud-init diagnostics
-    groups: sudo
-    append: true
-    shell: /bin/bash
-  when: ansible_facts.distribution == 'Ubuntu'
-
-- name: Set temporary Ubuntu debug user password
-  ansible.builtin.shell: |
-    set -eu
-    echo 'debug:packer' | chpasswd
-    usermod -U debug
-    chage -I -1 -m 0 -M 99999 -E -1 debug
-  changed_when: true
-  when: ansible_facts.distribution == 'Ubuntu'
-
-- name: Allow temporary Ubuntu debug user passwordless sudo
-  ansible.builtin.copy:
-    dest: /etc/sudoers.d/90-gencloud-debug
-    owner: root
-    group: root
-    mode: "0440"
-    content: |
-      debug ALL=(ALL) NOPASSWD:ALL
-    validate: /usr/sbin/visudo -cf %s
-  when: ansible_facts.distribution == 'Ubuntu'
 
 - name: Disable root login
   ansible.builtin.user:

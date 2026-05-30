@@ -277,18 +277,6 @@
     label: "{{ item.path }}"
   when: ansible_facts.distribution == 'Ubuntu'
 
-- name: Create Ubuntu netplan renderer baseline
-  ansible.builtin.copy:
-    dest: /etc/netplan/01-cloud-init-renderer.yaml
-    owner: root
-    group: root
-    mode: "0644"
-    content: |
-      network:
-        version: 2
-        renderer: networkd
-  when: ansible_facts.distribution == 'Ubuntu'
-
 - name: Remove RHEL log folders
   file:
     path: "{{ item }}"
