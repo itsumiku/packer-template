@@ -123,11 +123,34 @@
       NamePolicy=kernel
   when: ansible_facts.distribution == 'Ubuntu'
 
-- name: Disable Ubuntu networkd wait-online service
+- name: Mask Ubuntu networkd wait-online service
   ansible.builtin.systemd_service:
     name: systemd-networkd-wait-online.service
     enabled: false
+    masked: true
   failed_when: false
+  when: ansible_facts.distribution == 'Ubuntu'
+
+- name: Ensure Ubuntu SSH service drop-in directory exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/ssh.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: ansible_facts.distribution == 'Ubuntu'
+
+- name: Generate Ubuntu SSH host keys before ssh starts
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/ssh.service.d/10-gencloud-host-keys.conf
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [Service]
+      ExecStartPre=
+      ExecStartPre=/usr/bin/ssh-keygen -A
+      ExecStartPre=/usr/sbin/sshd -t
   when: ansible_facts.distribution == 'Ubuntu'
 
 - name: Regenerate GRUB configuration (apt)
