@@ -100,6 +100,36 @@
       GRUB_CMDLINE_LINUX_DEFAULT="nomodeset console=tty0 console=ttyS0,115200n8 net.ifnames=0 biosdevname=0"
   when: ansible_facts.distribution == 'Ubuntu'
 
+- name: Ensure Ubuntu systemd network directory exists
+  ansible.builtin.file:
+    path: /etc/systemd/network
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: ansible_facts.distribution == 'Ubuntu'
+
+- name: Keep Ubuntu virtio network interfaces on kernel names
+  ansible.builtin.copy:
+    dest: /etc/systemd/network/10-gencloud-virtio-net.link
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [Match]
+      Driver=virtio_net
+
+      [Link]
+      NamePolicy=kernel
+  when: ansible_facts.distribution == 'Ubuntu'
+
+- name: Disable Ubuntu networkd wait-online service
+  ansible.builtin.systemd_service:
+    name: systemd-networkd-wait-online.service
+    enabled: false
+  failed_when: false
+  when: ansible_facts.distribution == 'Ubuntu'
+
 - name: Regenerate GRUB configuration (apt)
   ansible.builtin.command:
     cmd: update-grub
