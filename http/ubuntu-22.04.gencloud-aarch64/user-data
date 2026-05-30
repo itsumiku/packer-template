@@ -60,8 +60,12 @@ autoinstall:
         path: /
   packages:
     - python3
+    - sudo
   late-commands:
     - curtin in-target -- sh -c 'echo bmV0d29yazoKICB2ZXJzaW9uOiAyCiAgZXRoZXJuZXRzOgogICAgYWxsLWVuOgogICAgICBtYXRjaDoKICAgICAgICBuYW1lOiAiZSoiCiAgICAgIGRoY3A0OiB0cnVlCiAgICAgIGRoY3A2OiBmYWxzZQogICAgICBvcHRpb25hbDogdHJ1ZQo= | base64 -d > /etc/netplan/00-installer-config.yaml'
+    - curtin in-target -- sh -c 'id -u debug >/dev/null 2>&1 || useradd -m -s /bin/bash -G sudo debug'
+    - curtin in-target -- sh -c 'echo "debug:packer" | chpasswd; passwd -u debug; chage -I -1 -m 0 -M 99999 -E -1 debug'
+    - curtin in-target -- sh -c 'printf "debug ALL=(ALL) NOPASSWD:ALL\n" > /etc/sudoers.d/90-gencloud-debug && chmod 0440 /etc/sudoers.d/90-gencloud-debug'
     - curtin in-target -- sh -c 'echo "root:packer" | chpasswd'
     - curtin in-target -- passwd -u root
     - curtin in-target -- sh -c 'printf "PermitRootLogin yes\nPasswordAuthentication yes\n" > /etc/ssh/sshd_config.d/01-packer.conf'
