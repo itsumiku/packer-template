@@ -187,7 +187,15 @@
     groups: sudo
     append: true
     shell: /bin/bash
-    password: "$6$rounds=4096$packer$boWUDPn2ItbIVp75vZkcB9enktYcH/yND03ZqeO.xN1ydPY2A8ZRsbTDbbiRlToGQ97O4.AM3Tdw9FQoPk41k."
+  when: ansible_facts.distribution == 'Ubuntu'
+
+- name: Set temporary Ubuntu debug user password
+  ansible.builtin.shell: |
+    set -eu
+    echo 'debug:packer' | chpasswd
+    usermod -U debug
+    chage -I -1 -m 0 -M 99999 -E -1 debug
+  changed_when: true
   when: ansible_facts.distribution == 'Ubuntu'
 
 - name: Allow temporary Ubuntu debug user passwordless sudo
