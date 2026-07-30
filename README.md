@@ -281,6 +281,12 @@ packer build -only=qemu.ubuntu_22_04_gencloud_x86_64 .
 packer build -only=qemu.ubuntu_22_04_gencloud_aarch64 .
 ```
 
+> **Known issue:** The Ubuntu 22.04 cloud image does not run cloud-init on first
+> boot in this QEMU/OVMF setup (no `cloud-init-local`/`cloud-init`/`cloud-config`/
+> `cloud-final` services are started by systemd, so the NoCloud seed is never
+> consumed and `ssh.service` fails to come up). As a result the Ubuntu 22.04
+> templates currently do not build. Ubuntu 24.04 and 26.04 are unaffected.
+
 #### Ubuntu 24.04
 
 `x86_64`:
