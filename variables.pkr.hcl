@@ -855,6 +855,10 @@ locals {
           - name: root
             password: ${var.gencloud_ssh_password}
             type: text
+      write_files:
+        - path: /etc/ssh/sshd_config.d/99-packer-root-login.conf
+          content: |
+            PermitRootLogin yes
       runcmd:
         - [ systemctl, unmask, ssh.service ]
         - [ systemctl, enable, ssh.service ]
@@ -889,6 +893,10 @@ locals {
           - name: root
             password: ${var.gencloud_ssh_password}
             type: text
+      write_files:
+        - path: /etc/ssh/sshd_config.d/99-packer-root-login.conf
+          content: |
+            PermitRootLogin yes
       runcmd:
         - [ systemctl, unmask, ssh.service ]
         - [ systemctl, enable, ssh.service ]
