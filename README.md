@@ -212,6 +212,9 @@ packer build -only=qemu.fedora_44_gencloud_aarch64 .
 
 ### Debian
 
+Debian GenericCloud images are customized from official Debian Generic Cloud images.
+Packer injects a temporary NoCloud seed for SSH access during provisioning, then the cleanup role removes
+build-time cloud-init state so the final image can be configured by the target platform.
 
 #### Debian 11
 
@@ -328,8 +331,7 @@ packer build -var gencloud_disk_size=10G -only=qemu.almalinux-9-gencloud-x86_64 
 | :--- | :---: | :--- |
 | RHEL family | `x86_64` | biosboot (1MB) + ESP (200MB) + /boot (512MB) + / |
 | RHEL family | `AArch64` | ESP (200MB) + /boot (512MB) + / |
-| Debian | `x86_64` | biosgrub (1MB) + ESP (538MB) + / |
-| Debian | `AArch64` | ESP (538MB) + / |
+| Debian | both | Inherited from the official Debian Generic Cloud image |
 | Ubuntu | both | ESP (538MB) + / |
 
 

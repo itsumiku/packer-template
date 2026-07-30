@@ -1,15 +1,15 @@
 # Debian 13 (Trixie) Packer template for Cloud-init included and OpenStack compatible Generic Cloud images
 
 source "qemu" "debian_13_gencloud_x86_64" {
-  iso_url            = local.debian_13_iso_url_x86_64
-  iso_checksum       = local.debian_13_iso_checksum_x86_64
-  http_directory     = var.http_directory
+  iso_url            = local.debian_13_cloudimg_url_x86_64
+  iso_checksum       = local.debian_13_cloudimg_checksum_x86_64
+  disk_image         = true
+  cd_label           = "cidata"
+  cd_content         = local.debian_cloudimg_seed
   shutdown_command   = var.root_shutdown_command
   ssh_username       = var.gencloud_ssh_username
   ssh_password       = var.gencloud_ssh_password
   ssh_timeout        = var.ssh_timeout
-  boot_command       = local.gencloud_boot_command_debian_13_x86_64
-  boot_wait          = var.boot_wait
   accelerator        = "kvm"
   disk_interface     = "virtio-scsi"
   disk_size          = var.gencloud_disk_size
@@ -33,15 +33,15 @@ source "qemu" "debian_13_gencloud_x86_64" {
 }
 
 source "qemu" "debian_13_gencloud_aarch64" {
-  iso_url            = local.debian_13_iso_url_aarch64
-  iso_checksum       = local.debian_13_iso_checksum_aarch64
-  http_directory     = var.http_directory
+  iso_url            = local.debian_13_cloudimg_url_aarch64
+  iso_checksum       = local.debian_13_cloudimg_checksum_aarch64
+  disk_image         = true
+  cd_label           = "cidata"
+  cd_content         = local.debian_cloudimg_seed
   shutdown_command   = var.root_shutdown_command
   ssh_username       = var.gencloud_ssh_username
   ssh_password       = var.gencloud_ssh_password
   ssh_timeout        = var.ssh_timeout
-  boot_command       = local.gencloud_boot_command_debian_13_aarch64
-  boot_wait          = var.boot_wait
   accelerator        = "kvm"
   firmware           = var.aavmf_code
   use_pflash         = false

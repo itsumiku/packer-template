@@ -64,7 +64,7 @@ variable "os_ver_rocky_10" {
   description = "Rocky Linux 10 version"
 
   type    = string
-  default = "10.1"
+  default = "10.2"
 
   validation {
     condition     = can(regex("10.[0-9]$|10.[1-9][0-9]$", var.os_ver_rocky_10))
@@ -767,14 +767,14 @@ variable "os_ver_debian_12" {
   description = "Debian 12 version"
 
   type    = string
-  default = "12.14.0"
+  default = "12.15.0"
 }
 
 variable "os_ver_debian_13" {
   description = "Debian 13 version"
 
   type    = string
-  default = "13.5.0"
+  default = "13.6.0"
 }
 
 variable "os_ver_ubuntu_2204" {
@@ -798,24 +798,25 @@ variable "os_ver_ubuntu_2604" {
   default = "26.04"
 }
 
-# Debian installation ISO URLs and checksums
-# Architecture mapping: Packer uses x86_64/aarch64, Debian ISOs use amd64/arm64
+# Debian Generic Cloud image URLs and checksums
+# Architecture mapping: Packer uses x86_64/aarch64, Debian cloud images use amd64/arm64
+# Codenames: bullseye (11), bookworm (12), trixie (13)
 
 locals {
-  debian_11_iso_url_x86_64       = "https://cdimage.debian.org/cdimage/archive/${var.os_ver_debian_11}/amd64/iso-cd/debian-${var.os_ver_debian_11}-amd64-netinst.iso"
-  debian_11_iso_checksum_x86_64  = "file:https://cdimage.debian.org/cdimage/archive/${var.os_ver_debian_11}/amd64/iso-cd/SHA512SUMS"
-  debian_11_iso_url_aarch64      = "https://cdimage.debian.org/cdimage/archive/${var.os_ver_debian_11}/arm64/iso-cd/debian-${var.os_ver_debian_11}-arm64-netinst.iso"
-  debian_11_iso_checksum_aarch64 = "file:https://cdimage.debian.org/cdimage/archive/${var.os_ver_debian_11}/arm64/iso-cd/SHA512SUMS"
+  debian_11_cloudimg_url_x86_64       = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2"
+  debian_11_cloudimg_checksum_x86_64  = "file:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS"
+  debian_11_cloudimg_url_aarch64      = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2"
+  debian_11_cloudimg_checksum_aarch64 = "file:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS"
 
-  debian_12_iso_url_x86_64       = "https://cdimage.debian.org/cdimage/archive/${var.os_ver_debian_12}/amd64/iso-cd/debian-${var.os_ver_debian_12}-amd64-netinst.iso"
-  debian_12_iso_checksum_x86_64  = "file:https://cdimage.debian.org/cdimage/archive/${var.os_ver_debian_12}/amd64/iso-cd/SHA512SUMS"
-  debian_12_iso_url_aarch64      = "https://cdimage.debian.org/cdimage/archive/${var.os_ver_debian_12}/arm64/iso-cd/debian-${var.os_ver_debian_12}-arm64-netinst.iso"
-  debian_12_iso_checksum_aarch64 = "file:https://cdimage.debian.org/cdimage/archive/${var.os_ver_debian_12}/arm64/iso-cd/SHA512SUMS"
+  debian_12_cloudimg_url_x86_64       = "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2"
+  debian_12_cloudimg_checksum_x86_64  = "file:https://cloud.debian.org/images/cloud/bookworm/latest/SHA512SUMS"
+  debian_12_cloudimg_url_aarch64      = "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-arm64.qcow2"
+  debian_12_cloudimg_checksum_aarch64 = "file:https://cloud.debian.org/images/cloud/bookworm/latest/SHA512SUMS"
 
-  debian_13_iso_url_x86_64       = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-${var.os_ver_debian_13}-amd64-netinst.iso"
-  debian_13_iso_checksum_x86_64  = "file:https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/SHA512SUMS"
-  debian_13_iso_url_aarch64      = "https://cdimage.debian.org/cdimage/release/current/arm64/iso-cd/debian-${var.os_ver_debian_13}-arm64-netinst.iso"
-  debian_13_iso_checksum_aarch64 = "file:https://cdimage.debian.org/cdimage/release/current/arm64/iso-cd/SHA512SUMS"
+  debian_13_cloudimg_url_x86_64       = "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2"
+  debian_13_cloudimg_checksum_x86_64  = "file:https://cloud.debian.org/images/cloud/trixie/latest/SHA512SUMS"
+  debian_13_cloudimg_url_aarch64      = "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-arm64.qcow2"
+  debian_13_cloudimg_checksum_aarch64 = "file:https://cloud.debian.org/images/cloud/trixie/latest/SHA512SUMS"
 }
 
 # Ubuntu Cloud Image URLs and checksums
@@ -872,65 +873,37 @@ locals {
   }
 }
 
-# Debian boot commands (GRUB shell: auto=true with preseed URL)
-
-local "gencloud_boot_command_debian_11_x86_64" {
-  expression = [
-    "<wait30s>",
-    "c<wait>",
-    "linux /install.amd/vmlinuz auto=true priority=critical preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/debian-11.gencloud-x86_64.cfg debian-installer/locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=us<enter><wait>",
-    "initrd /install.amd/initrd.gz<enter><wait>",
-    "boot<enter>",
-  ]
-}
-
-local "gencloud_boot_command_debian_11_aarch64" {
-  expression = [
-    "<wait30s>",
-    "c<wait>",
-    "linux /install.a64/vmlinuz auto=true priority=critical preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/debian-11.gencloud-aarch64.cfg debian-installer/locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=us<enter><wait>",
-    "initrd /install.a64/initrd.gz<enter><wait>",
-    "boot<enter>",
-  ]
-}
-
-local "gencloud_boot_command_debian_12_x86_64" {
-  expression = [
-    "<wait30s>",
-    "c<wait>",
-    "linux /install.amd/vmlinuz auto=true priority=critical preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/debian-12.gencloud-x86_64.cfg debian-installer/locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=us<enter><wait>",
-    "initrd /install.amd/initrd.gz<enter><wait>",
-    "boot<enter>",
-  ]
-}
-
-local "gencloud_boot_command_debian_12_aarch64" {
-  expression = [
-    "<wait30s>",
-    "c<wait>",
-    "linux /install.a64/vmlinuz auto=true priority=critical preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/debian-12.gencloud-aarch64.cfg debian-installer/locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=us<enter><wait>",
-    "initrd /install.a64/initrd.gz<enter><wait>",
-    "boot<enter>",
-  ]
-}
-
-local "gencloud_boot_command_debian_13_x86_64" {
-  expression = [
-    "<wait30s>",
-    "c<wait>",
-    "linux /install.amd/vmlinuz auto=true priority=critical preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/debian-13.gencloud-x86_64.cfg debian-installer/locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=us<enter><wait>",
-    "initrd /install.amd/initrd.gz<enter><wait>",
-    "boot<enter>",
-  ]
-}
-
-local "gencloud_boot_command_debian_13_aarch64" {
-  expression = [
-    "<wait30s>",
-    "c<wait>",
-    "linux /install.a64/vmlinuz auto=true priority=critical preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/debian-13.gencloud-aarch64.cfg debian-installer/locale=en_US.UTF-8 keyboard-configuration/xkb-keymap=us<enter><wait>",
-    "initrd /install.a64/initrd.gz<enter><wait>",
-    "boot<enter>",
-  ]
+locals {
+  debian_cloudimg_seed = {
+    "meta-data"      = <<-EOF
+      instance-id: packer-debian-cloudimg
+      local-hostname: debian
+    EOF
+    "user-data"      = <<-EOF
+      #cloud-config
+      disable_root: false
+      ssh_pwauth: true
+      chpasswd:
+        expire: false
+        users:
+          - name: root
+            password: ${var.gencloud_ssh_password}
+            type: text
+      runcmd:
+        - [ systemctl, unmask, ssh.service ]
+        - [ systemctl, enable, ssh.service ]
+        - [ systemctl, restart, ssh.service ]
+    EOF
+    "network-config" = <<-EOF
+      version: 2
+      ethernets:
+        build:
+          match:
+            name: "e*"
+          dhcp4: true
+          dhcp6: false
+          optional: true
+    EOF
+  }
 }
 
